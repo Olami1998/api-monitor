@@ -63,3 +63,4 @@ Browser → Next.js API → PostgreSQL
 ## Out of MVP
 
 Teams, billing, public developer API, Slack/Discord, multi-region probes, and Redis/BullMQ. The database-backed queue is enough for a single instance; a dedicated worker + Redis is the scale-out path.
+# api-monitor
