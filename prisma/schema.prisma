@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum MonitorStatus {
+  ACTIVE
+  PAUSED
+}
+
+enum MonitorHealth {
+  UNKNOWN
+  HEALTHY
+  DEGRADED
+  FAILING
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+}
+
+enum AuthType {
+  NONE
+  API_KEY
+  BEARER
+  BASIC
+}
+
+enum TestRunStatus {
+  QUEUED
+  RUNNING
+  PASSED
+  FAILED
+  ERROR
+  TIMEOUT
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
+}
+
+enum AssertionType {
+  STATUS_CODE
+  RESPONSE_TIME
+  HEADER
+  JSON
+}
+
+enum AssertionOperator {
+  EQUALS
+  NOT_EQUALS
+  CONTAINS
+  NOT_CONTAINS
+  EXISTS
+  NOT_EXISTS
+  LESS_THAN
+  GREATER_THAN
+  LESS_THAN_OR_EQUAL
+  GREATER_THAN_OR_EQUAL
+  TYPE_IS
+}
+
+enum NotificationType {
+  EMAIL
+  WEBHOOK
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  projects      Project[]
+  notifications Notification[]
+  sessions      Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  monitors Monitor[]
+
+  @@index([userId])
+}
+
+model Monitor {
+  id              String        @id @default(cuid())
+  name            String
+  url             String
+  method          HttpMethod    @default(GET)
+  status          MonitorStatus @default(ACTIVE)
+  health          MonitorHealth @default(UNKNOWN)
+  intervalSeconds Int           @default(300)
+  timeoutMs       Int           @default(10000)
+  enabled         Boolean       @default(true)
+  lastRunAt       DateTime?
+  nextRunAt       DateTime?
+  consecutiveFailures Int       @default(0)
+  request         Json?
+  auth            Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  assertions    Assertion[]
+  testRuns      TestRun[]
+  incidents     Incident[]
+  notifications Notification[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([enabled, nextRunAt])
+}
+
+model Assertion {
+  id            String             @id @default(cuid())
+  type          AssertionType
+  operator      AssertionOperator
+  target        String?
+  expectedValue Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  monitorId String
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  results AssertionResult[]
+
+  @@index([monitorId])
+}
+
+model TestRun {
+  id           String        @id @default(cuid())
+  status       TestRunStatus
+  httpStatus   Int?
+  responseTime Int?
+  responseSize Int?
+  errorMessage String?
+  startedAt    DateTime
+  completedAt  DateTime?
+  jobId        String?
+
+  createdAt DateTime @default(now())
+
+  monitorId String
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  assertionResults AssertionResult[]
+
+  @@index([monitorId, createdAt])
+  @@index([status])
+}
+
+model AssertionResult {
+  id          String   @id @default(cuid())
+  passed      Boolean
+  actual      String?
+  message     String?
+  expected    Json?
+  actualValue Json?
+
+  createdAt DateTime @default(now())
+
+  assertionId String
+  assertion   Assertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+
+  testRunId String
+  testRun   TestRun @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+
+  @@index([testRunId])
+  @@index([assertionId])
+}
+
+model Incident {
+  id            String         @id @default(cuid())
+  status        IncidentStatus @default(OPEN)
+  startedAt     DateTime
+  resolvedAt    DateTime?
+  failureReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  monitorId String
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  notifications Notification[]
+
+  @@index([monitorId, status])
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  type      NotificationType
+  status    NotificationStatus @default(PENDING)
+  recipient String
+  sentAt    DateTime?
+  error     String?
+
+  createdAt DateTime @default(now())
+
+  userId String?
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  monitorId String?
+  monitor   Monitor? @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  incidentId String?
+  incident   Incident? @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([monitorId])
+  @@index([status])
+}

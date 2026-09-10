@@ -1,0 +1,9 @@
+# Optional container for the app. Local development can run `npm run dev` with SQLite.
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: file:./dev.db
+      ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
