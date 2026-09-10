@@ -13,14 +13,11 @@ export function publicAuth(auth: unknown) {
   };
 }
 
-const REDACTED_HEADERS = new Set([
-  "authorization",
-  "proxy-authorization",
-  "cookie",
-  "set-cookie",
-  "x-api-key",
-  "api-key",
-]);
+function isSensitiveName(name: string) {
+  return /^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|api-key|x-auth-token|x-access-token)$|token|secret|password|auth/i.test(
+    name
+  );
+}
 
 export function publicRequest(request: unknown) {
   if (!request || typeof request !== "object") {
@@ -31,12 +28,19 @@ export function publicRequest(request: unknown) {
   if (data.headers && typeof data.headers === "object" && !Array.isArray(data.headers)) {
     for (const [key, value] of Object.entries(data.headers as Record<string, unknown>)) {
       if (typeof value !== "string") continue;
-      headers[key] = REDACTED_HEADERS.has(key.toLowerCase()) ? "[REDACTED]" : value;
+      headers[key] = isSensitiveName(key) ? "[REDACTED]" : value;
+    }
+  }
+  const queryParams: Record<string, string> = {};
+  if (data.queryParams && typeof data.queryParams === "object" && !Array.isArray(data.queryParams)) {
+    for (const [key, value] of Object.entries(data.queryParams as Record<string, unknown>)) {
+      if (typeof value !== "string") continue;
+      queryParams[key] = isSensitiveName(key) ? "[REDACTED]" : value;
     }
   }
   return {
     headers,
-    queryParams: data.queryParams ?? {},
+    queryParams,
     body: data.body ?? null,
   };
 }

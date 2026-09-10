@@ -48,18 +48,21 @@ function ipv4FromMappedIpv6(ip: string) {
   return `${(high >> 8) & 255}.${high & 255}.${(low >> 8) & 255}.${low & 255}`;
 }
 
+function firstHextet(ip: string) {
+  const first = stripBrackets(ip).toLowerCase().split(":")[0] ?? "";
+  const value = Number.parseInt(first, 16);
+  return Number.isFinite(value) ? value : null;
+}
+
 export function isBlockedIpv6(ip: string) {
   const mapped = ipv4FromMappedIpv6(ip);
   if (mapped) return isBlockedIpv4(mapped);
   const normalized = stripBrackets(ip).toLowerCase();
-  return (
-    normalized === "::" ||
-    normalized === "::1" ||
-    normalized.startsWith("fc") ||
-    normalized.startsWith("fd") ||
-    normalized.startsWith("fe80") ||
-    normalized.startsWith("ff")
-  );
+  const hextet = firstHextet(normalized);
+  const linkLocal = hextet !== null && (hextet & 0xffc0) === 0xfe80;
+  const uniqueLocal = hextet !== null && (hextet & 0xfe00) === 0xfc00;
+  const multicast = hextet !== null && (hextet & 0xff00) === 0xff00;
+  return normalized === "::" || normalized === "::1" || linkLocal || uniqueLocal || multicast;
 }
 
 export function isBlockedIp(ip: string) {

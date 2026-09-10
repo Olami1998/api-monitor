@@ -186,7 +186,8 @@ export const IncidentScalarFieldEnum = {
   failureReason: 'failureReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  monitorId: 'monitorId'
+  monitorId: 'monitorId',
+  openMonitorId: 'openMonitorId'
 } as const
 
 export type IncidentScalarFieldEnum = (typeof IncidentScalarFieldEnum)[keyof typeof IncidentScalarFieldEnum]

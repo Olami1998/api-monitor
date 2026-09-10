@@ -17,7 +17,12 @@ const FORBIDDEN_HEADERS = new Set([
   "trailer",
   "proxy-authorization",
   "proxy-authenticate",
+  "cookie",
+  "set-cookie",
+  "authorization",
 ]);
+
+const SENSITIVE_HEADER = /^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|api-key|x-auth-token|x-access-token)$|token|secret|password|auth/i;
 
 type RequestConfig = {
   headers?: Record<string, string>;
@@ -44,6 +49,29 @@ function isSafeHeaderName(name: string) {
   const key = name.trim().toLowerCase();
   if (!key || /[\r\n]/.test(name)) return false;
   return !FORBIDDEN_HEADERS.has(key);
+}
+
+function stripSensitiveHeaders(headers: Record<string, string>) {
+  for (const key of Object.keys(headers)) {
+    if (SENSITIVE_HEADER.test(key)) {
+      delete headers[key];
+    }
+  }
+}
+
+function publicErrorMessage(err: unknown) {
+  const message = err instanceof Error ? err.message : "Request failed";
+  if (/timeout|abort/i.test(message)) return "Request timed out";
+  if (/maximum allowed size/i.test(message)) return "Response exceeded maximum allowed size";
+  if (/Unsafe or excessive/i.test(message)) return "Unsafe or excessive redirects";
+  if (
+    /private or reserved|hostname is not allowed|Only http|credentials are not allowed|Unable to resolve/i.test(
+      message
+    )
+  ) {
+    return "Destination is not allowed";
+  }
+  return "Request failed";
 }
 
 function applyAuth(headers: Record<string, string>, auth: AuthConfig | null | undefined) {
@@ -207,6 +235,7 @@ export async function executeMonitorRequest(input: {
         }
         const next = new URL(location, target.url);
         target = await assertSafeDestination(next.toString());
+        stripSensitiveHeaders(headers);
         if (response.status === 303 || ((response.status === 301 || response.status === 302) && method !== "HEAD")) {
           method = "GET";
           body = undefined;
@@ -226,12 +255,11 @@ export async function executeMonitorRequest(input: {
       };
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Request failed";
-    const timedOut = /timeout|abort/i.test(message);
+    const errorMessage = publicErrorMessage(err);
     return {
-      status: timedOut ? "TIMEOUT" : "ERROR",
+      status: errorMessage === "Request timed out" ? "TIMEOUT" : "ERROR",
       responseTime: Date.now() - started,
-      errorMessage: timedOut ? "Request timed out" : message,
+      errorMessage,
     };
   }
 }

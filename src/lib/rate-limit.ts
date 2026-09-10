@@ -4,7 +4,8 @@ const MAX_KEYS = 5000;
 export function rateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
   if (buckets.size > MAX_KEYS) {
-    buckets.clear();
+    const oldest = buckets.keys().next().value;
+    if (oldest) buckets.delete(oldest);
   }
   const stamps = (buckets.get(key) ?? []).filter((time) => now - time < windowMs);
   if (stamps.length >= limit) {
@@ -19,6 +20,7 @@ export function rateLimit(key: string, limit: number, windowMs: number) {
 export function clientKey(request: Request, userId?: string) {
   const trustProxy = process.env.TRUST_PROXY === "true";
   const forwarded = trustProxy ? request.headers.get("x-forwarded-for") : null;
-  const ip = forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "local";
+  const realIp = trustProxy ? request.headers.get("x-real-ip") : null;
+  const ip = forwarded?.split(",")[0]?.trim() || realIp || "local";
   return userId ? `${userId}:${ip}` : ip;
 }

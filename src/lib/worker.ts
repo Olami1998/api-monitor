@@ -36,7 +36,7 @@ export async function processQueuedRuns() {
     } catch (error) {
       await writeRunResult(run.id, {
         status: "ERROR",
-        errorMessage: error instanceof Error ? error.message : "Worker failed",
+        errorMessage: "Request failed",
       });
     }
     processed.push(run.id);

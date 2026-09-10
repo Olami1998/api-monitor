@@ -46,7 +46,16 @@ const headerName = z
   .refine((value) => /^[\w-]+$/.test(value), "Invalid header name")
   .refine(
     (value) =>
-      !["host", "content-length", "transfer-encoding", "connection", "cookie"].includes(value.toLowerCase()),
+      ![
+        "host",
+        "content-length",
+        "transfer-encoding",
+        "connection",
+        "cookie",
+        "set-cookie",
+        "authorization",
+        "proxy-authorization",
+      ].includes(value.toLowerCase()),
     "Header is not allowed"
   );
 
@@ -95,6 +104,7 @@ export const assertionSchema = z.object({
 });
 
 export const incidentStatusSchema = z.enum(["OPEN", "RESOLVED"]);
+export const testRunStatusSchema = z.enum(["QUEUED", "RUNNING", "PASSED", "FAILED", "ERROR", "TIMEOUT"]);
 
 export function parseBody<T>(schema: z.ZodType<T>, value: unknown): { ok: true; data: T } | { ok: false; error: string } {
   const result = schema.safeParse(value);

@@ -223,6 +223,7 @@ model Incident {
 
   monitorId String
   monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  openMonitorId String? @unique
 
   notifications Notification[]
 

@@ -5,6 +5,10 @@ function getKey() {
   if (!hex || !/^[0-9a-fA-F]{64}$/.test(hex)) {
     throw new Error("ENCRYPTION_KEY must be a 32-byte hex string");
   }
+  const EXAMPLE = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  if (process.env.NODE_ENV === "production" && hex.toLowerCase() === EXAMPLE) {
+    throw new Error("ENCRYPTION_KEY must not use the example value in production");
+  }
   return Buffer.from(hex, "hex");
 }
 

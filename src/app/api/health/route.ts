@@ -5,8 +5,8 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return Response.json({ status: "ok", database: "up" });
+    return Response.json({ ok: true });
   } catch {
-    return Response.json({ status: "degraded", database: "down" }, { status: 503 });
+    return Response.json({ ok: false }, { status: 503 });
   }
 }

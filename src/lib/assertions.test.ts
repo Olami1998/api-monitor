@@ -53,6 +53,14 @@ describe("ssrf", () => {
     expect(isSafeHttpUrl("https://example.com/health")).toBe(true);
   });
 
+  it("blocks ipv6 link-local beyond fe80", () => {
+    expect(isBlockedIp("fe80::1")).toBe(true);
+    expect(isBlockedIp("fe81::1")).toBe(true);
+    expect(isBlockedIp("[fea0::1]")).toBe(true);
+    expect(isBlockedIp("febf::1")).toBe(true);
+    expect(isSafeHttpUrl("http://[fe81::1]/")).toBe(false);
+  });
+
   it("blocks rfc1918 ranges", () => {
     expect(isBlockedIpv4("192.168.1.1")).toBe(true);
     expect(isBlockedIpv4("8.8.8.8")).toBe(false);

@@ -3,6 +3,7 @@ import { error, json } from "@/lib/http";
 import { requireUser } from "@/lib/auth";
 import { getOwnedMonitor } from "@/lib/access";
 import type { RouteParams } from "@/lib/route";
+import { testRunStatusSchema } from "@/lib/schemas";
 
 export async function GET(request: Request, context: RouteParams<{ monitorId: string }>) {
   const result = await requireUser();
@@ -15,11 +16,15 @@ export async function GET(request: Request, context: RouteParams<{ monitorId: st
   const url = new URL(request.url);
   const page = Math.max(1, Number(url.searchParams.get("page") ?? 1));
   const limit = Math.min(50, Math.max(1, Number(url.searchParams.get("limit") ?? 20)));
-  const status = url.searchParams.get("status");
+  const statusParam = url.searchParams.get("status");
+  const status = statusParam ? testRunStatusSchema.safeParse(statusParam) : null;
+  if (statusParam && !status?.success) {
+    return error("VALIDATION_ERROR", "Invalid run status.", 422);
+  }
 
   const where = {
     monitorId,
-    ...(status ? { status: status as never } : {}),
+    ...(status?.success ? { status: status.data } : {}),
   };
 
   const [total, runs] = await Promise.all([

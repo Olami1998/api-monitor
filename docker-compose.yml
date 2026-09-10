@@ -5,5 +5,5 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: file:./dev.db
-      ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      DATABASE_URL: file:./data/dev.db
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY to a 64-character hex string}

@@ -19,7 +19,7 @@ export async function applyRunOutcome(input: {
     if (open) {
       await prisma.incident.update({
         where: { id: open.id },
-        data: { status: "RESOLVED", resolvedAt: new Date() },
+        data: { status: "RESOLVED", resolvedAt: new Date(), openMonitorId: null },
       });
       await prisma.notification.create({
         data: {
@@ -65,23 +65,28 @@ export async function applyRunOutcome(input: {
   }
 
   const owner = await prisma.user.findUnique({ where: { id: input.ownerId } });
-  const incident = await prisma.incident.create({
-    data: {
-      monitorId: input.monitor.id,
-      status: "OPEN",
-      startedAt: new Date(),
-      failureReason: input.failureReason,
-    },
-  });
-  await prisma.notification.create({
-    data: {
-      type: "EMAIL",
-      status: "SENT",
-      recipient: owner?.email ?? "",
-      sentAt: new Date(),
-      userId: input.ownerId,
-      monitorId: input.monitor.id,
-      incidentId: incident.id,
-    },
-  });
+  try {
+    const incident = await prisma.incident.create({
+      data: {
+        monitorId: input.monitor.id,
+        status: "OPEN",
+        startedAt: new Date(),
+        failureReason: input.failureReason,
+        openMonitorId: input.monitor.id,
+      },
+    });
+    await prisma.notification.create({
+      data: {
+        type: "EMAIL",
+        status: "SENT",
+        recipient: owner?.email ?? "",
+        sentAt: new Date(),
+        userId: input.ownerId,
+        monitorId: input.monitor.id,
+        incidentId: incident.id,
+      },
+    });
+  } catch {
+    return;
+  }
 }
