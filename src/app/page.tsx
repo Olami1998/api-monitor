@@ -11,12 +11,15 @@ export default function HomePage() {
         Monitor HTTP endpoints, assert status codes, latency, headers, and JSON contracts, then
         investigate incidents with expected vs actual results.
       </p>
-      <div className="mt-8 flex gap-3">
+      <div className="mt-8 flex flex-wrap gap-3">
         <Link href="/register" className="rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-medium text-white">
           Create account
         </Link>
         <Link href="/login" className="rounded-lg border border-[var(--line)] bg-white px-4 py-2.5 text-sm">
           Sign in
+        </Link>
+        <Link href="/docs" className="rounded-lg px-4 py-2.5 text-sm text-teal-800 underline">
+          Documentation
         </Link>
       </div>
     </main>

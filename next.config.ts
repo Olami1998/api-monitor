@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
-  serverExternalPackages: ["@prisma/client", "@prisma/adapter-better-sqlite3", "better-sqlite3", "undici"],
+  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "pg", "undici"],
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {

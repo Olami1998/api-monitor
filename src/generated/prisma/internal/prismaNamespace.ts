@@ -1121,6 +1121,9 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
  */
 
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 } as const)
 
@@ -1277,6 +1280,14 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
@@ -1294,14 +1305,6 @@ export const JsonNullValueFilter = {
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
 
 /**
  * Field references
@@ -1316,9 +1319,23 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
+ * Reference to a field of type 'String[]'
+ */
+export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -1330,9 +1347,23 @@ export type EnumHttpMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
 
 
 /**
+ * Reference to a field of type 'HttpMethod[]'
+ */
+export type ListEnumHttpMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HttpMethod[]'>
+    
+
+
+/**
  * Reference to a field of type 'MonitorStatus'
  */
 export type EnumMonitorStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorStatus[]'
+ */
+export type ListEnumMonitorStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorStatus[]'>
     
 
 
@@ -1344,9 +1375,23 @@ export type EnumMonitorHealthFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'MonitorHealth[]'
+ */
+export type ListEnumMonitorHealthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorHealth[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1379,9 +1424,23 @@ export type EnumAssertionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'AssertionType[]'
+ */
+export type ListEnumAssertionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssertionType[]'>
+    
+
+
+/**
  * Reference to a field of type 'AssertionOperator'
  */
 export type EnumAssertionOperatorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssertionOperator'>
+    
+
+
+/**
+ * Reference to a field of type 'AssertionOperator[]'
+ */
+export type ListEnumAssertionOperatorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssertionOperator[]'>
     
 
 
@@ -1393,9 +1452,23 @@ export type EnumTestRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'TestRunStatus[]'
+ */
+export type ListEnumTestRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TestRunStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'IncidentStatus'
  */
 export type EnumIncidentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'IncidentStatus[]'
+ */
+export type ListEnumIncidentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentStatus[]'>
     
 
 
@@ -1407,6 +1480,13 @@ export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'NotificationType[]'
+ */
+export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
+    
+
+
+/**
  * Reference to a field of type 'NotificationStatus'
  */
 export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus'>
@@ -1414,9 +1494,23 @@ export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'NotificationStatus[]'
+ */
+export type ListEnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**

@@ -1,9 +1,9 @@
-# Optional container for the app. Local development can run `npm run dev` with SQLite.
+# App talks to Neon (or any Postgres) via DATABASE_URL. Do not commit secrets.
 services:
   app:
     build: .
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: file:./data/dev.db
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to your Neon connection string}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY to a 64-character hex string}

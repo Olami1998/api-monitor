@@ -482,6 +482,7 @@ export type AssertionCreateOrConnectWithoutMonitorInput = {
 
 export type AssertionCreateManyMonitorInputEnvelope = {
   data: Prisma.AssertionCreateManyMonitorInput | Prisma.AssertionCreateManyMonitorInput[]
+  skipDuplicates?: boolean
 }
 
 export type AssertionUpsertWithWhereUniqueWithoutMonitorInput = {
@@ -1391,6 +1392,7 @@ export type AssertionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many Assertions.
    */
   data: Prisma.AssertionCreateManyInput | Prisma.AssertionCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1409,6 +1411,7 @@ export type AssertionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many Assertions.
    */
   data: Prisma.AssertionCreateManyInput | Prisma.AssertionCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

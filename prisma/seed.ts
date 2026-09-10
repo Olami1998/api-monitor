@@ -1,20 +1,21 @@
 import "dotenv/config";
-import { mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { setDefaultResultOrder } from "node:dns";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { hashPassword } from "../src/lib/password";
+
+setDefaultResultOrder("ipv4first");
 
 const url = process.env.DATABASE_URL;
 if (!url) {
   throw new Error("DATABASE_URL is required");
 }
 if (url.startsWith("file:")) {
-  mkdirSync(dirname(resolve(url.slice("file:".length))), { recursive: true });
+  throw new Error("DATABASE_URL must be a Neon PostgreSQL connection string, not a SQLite file URL.");
 }
 
 const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url, timeout: 5000 }),
+  adapter: new PrismaPg({ connectionString: url }),
 });
 
 const users = [

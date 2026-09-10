@@ -510,6 +510,7 @@ export type IncidentCreateOrConnectWithoutMonitorInput = {
 
 export type IncidentCreateManyMonitorInputEnvelope = {
   data: Prisma.IncidentCreateManyMonitorInput | Prisma.IncidentCreateManyMonitorInput[]
+  skipDuplicates?: boolean
 }
 
 export type IncidentUpsertWithWhereUniqueWithoutMonitorInput = {
@@ -1434,6 +1435,7 @@ export type IncidentCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data used to create many Incidents.
    */
   data: Prisma.IncidentCreateManyInput | Prisma.IncidentCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1452,6 +1454,7 @@ export type IncidentCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many Incidents.
    */
   data: Prisma.IncidentCreateManyInput | Prisma.IncidentCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

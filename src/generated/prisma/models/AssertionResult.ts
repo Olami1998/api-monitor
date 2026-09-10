@@ -508,6 +508,7 @@ export type AssertionResultCreateOrConnectWithoutAssertionInput = {
 
 export type AssertionResultCreateManyAssertionInputEnvelope = {
   data: Prisma.AssertionResultCreateManyAssertionInput | Prisma.AssertionResultCreateManyAssertionInput[]
+  skipDuplicates?: boolean
 }
 
 export type AssertionResultUpsertWithWhereUniqueWithoutAssertionInput = {
@@ -570,6 +571,7 @@ export type AssertionResultCreateOrConnectWithoutTestRunInput = {
 
 export type AssertionResultCreateManyTestRunInputEnvelope = {
   data: Prisma.AssertionResultCreateManyTestRunInput | Prisma.AssertionResultCreateManyTestRunInput[]
+  skipDuplicates?: boolean
 }
 
 export type AssertionResultUpsertWithWhereUniqueWithoutTestRunInput = {
@@ -1430,6 +1432,7 @@ export type AssertionResultCreateManyArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many AssertionResults.
    */
   data: Prisma.AssertionResultCreateManyInput | Prisma.AssertionResultCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1448,6 +1451,7 @@ export type AssertionResultCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    * The data used to create many AssertionResults.
    */
   data: Prisma.AssertionResultCreateManyInput | Prisma.AssertionResultCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

@@ -8,7 +8,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: file:./dev.db
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
       ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
     steps:
       - uses: actions/checkout@v4

@@ -1,25 +1,22 @@
-import { mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { setDefaultResultOrder } from "node:dns";
 import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+setDefaultResultOrder("ipv4first");
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
-
-function ensureSqliteDirectory(url: string) {
-  if (!url.startsWith("file:")) return;
-  const filePath = url.slice("file:".length);
-  mkdirSync(dirname(resolve(filePath)), { recursive: true });
-}
 
 function createPrismaClient() {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error("DATABASE_URL is required");
   }
-  ensureSqliteDirectory(url);
-  const adapter = new PrismaBetterSqlite3({ url, timeout: 5000 });
+  if (url.startsWith("file:")) {
+    throw new Error("DATABASE_URL must be a Neon PostgreSQL connection string, not a SQLite file URL.");
+  }
+  const adapter = new PrismaPg({ connectionString: url });
   return new PrismaClient({ adapter });
 }
 

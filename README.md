@@ -2,7 +2,7 @@
 
 HTTP API monitoring: define an endpoint, assert what a good response looks like, run checks on a schedule, and inspect failures as expected vs actual.
 
-The Next.js app owns authentication and CRUD. In production, a Node runtime loop inside the app claims due monitors, executes outbound HTTP from the server, evaluates assertions, opens/resolves incidents, and records in-app notifications. Jobs live in SQLite (`TestRun.status = QUEUED`) so local development needs no extra services. `next dev` does not run that 5s loop by default, because those SQLite writes were treated as source changes and reloaded the browser.
+The Next.js app owns authentication and CRUD. In production, a Node runtime loop inside the app claims due monitors, executes outbound HTTP from the server, evaluates assertions, opens/resolves incidents, and records in-app notifications. Jobs live in PostgreSQL (`TestRun.status = QUEUED`). `next dev` does not run that 5s loop by default.
 
 ## Why this shape
 
@@ -13,17 +13,13 @@ The Next.js app owns authentication and CRUD. In production, a Node runtime loop
 
 ## Local setup
 
-1. Copy environment variables:
+1. Copy `.env.example` to `.env`. Paste your Neon connection string as `DATABASE_URL` (dashboard → Connect, include `sslmode=require`). If `prisma migrate` fails, also set `DIRECT_URL` to the **direct** host (no `-pooler`).
 
-```bash
-cp .env.example .env
-```
-
-2. Install, generate the Prisma client, apply migrations, and seed test users:
+2. Install, apply migrations, and seed:
 
 ```bash
 npm install
-npx prisma migrate dev
+npx prisma migrate deploy
 npx prisma db seed
 npm run dev
 ```
@@ -34,7 +30,8 @@ Open [http://localhost:3000](http://localhost:3000). Sign in with `demo@example.
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | SQLite file URL, default `file:./data/dev.db` (kept out of the Next.js watch tree) |
+| `DATABASE_URL` | Neon PostgreSQL URI (pooled is fine for the app) |
+| `DIRECT_URL` | Optional Neon **direct** URI (no `-pooler`) for `prisma migrate` |
 | `ENCRYPTION_KEY` | 32-byte hex key for monitor credentials |
 | `ENABLE_SCHEDULER` | Set `true` in `next dev` to run the 5s due-monitor loop. Production (`next start`) enables it unless you set `false`. |
 
