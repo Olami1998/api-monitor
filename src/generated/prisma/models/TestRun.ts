@@ -47,7 +47,6 @@ export type TestRunMinAggregateOutputType = {
   errorMessage: string | null
   startedAt: Date | null
   completedAt: Date | null
-  jobId: string | null
   createdAt: Date | null
   monitorId: string | null
 }
@@ -61,7 +60,6 @@ export type TestRunMaxAggregateOutputType = {
   errorMessage: string | null
   startedAt: Date | null
   completedAt: Date | null
-  jobId: string | null
   createdAt: Date | null
   monitorId: string | null
 }
@@ -75,7 +73,6 @@ export type TestRunCountAggregateOutputType = {
   errorMessage: number
   startedAt: number
   completedAt: number
-  jobId: number
   createdAt: number
   monitorId: number
   _all: number
@@ -103,7 +100,6 @@ export type TestRunMinAggregateInputType = {
   errorMessage?: true
   startedAt?: true
   completedAt?: true
-  jobId?: true
   createdAt?: true
   monitorId?: true
 }
@@ -117,7 +113,6 @@ export type TestRunMaxAggregateInputType = {
   errorMessage?: true
   startedAt?: true
   completedAt?: true
-  jobId?: true
   createdAt?: true
   monitorId?: true
 }
@@ -131,7 +126,6 @@ export type TestRunCountAggregateInputType = {
   errorMessage?: true
   startedAt?: true
   completedAt?: true
-  jobId?: true
   createdAt?: true
   monitorId?: true
   _all?: true
@@ -232,7 +226,6 @@ export type TestRunGroupByOutputType = {
   errorMessage: string | null
   startedAt: Date
   completedAt: Date | null
-  jobId: string | null
   createdAt: Date
   monitorId: string
   _count: TestRunCountAggregateOutputType | null
@@ -269,7 +262,6 @@ export type TestRunWhereInput = {
   errorMessage?: Prisma.StringNullableFilter<"TestRun"> | string | null
   startedAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TestRun"> | Date | string | null
-  jobId?: Prisma.StringNullableFilter<"TestRun"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   monitorId?: Prisma.StringFilter<"TestRun"> | string
   monitor?: Prisma.XOR<Prisma.MonitorScalarRelationFilter, Prisma.MonitorWhereInput>
@@ -285,7 +277,6 @@ export type TestRunOrderByWithRelationInput = {
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  jobId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   monitorId?: Prisma.SortOrder
   monitor?: Prisma.MonitorOrderByWithRelationInput
@@ -304,7 +295,6 @@ export type TestRunWhereUniqueInput = Prisma.AtLeast<{
   errorMessage?: Prisma.StringNullableFilter<"TestRun"> | string | null
   startedAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TestRun"> | Date | string | null
-  jobId?: Prisma.StringNullableFilter<"TestRun"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   monitorId?: Prisma.StringFilter<"TestRun"> | string
   monitor?: Prisma.XOR<Prisma.MonitorScalarRelationFilter, Prisma.MonitorWhereInput>
@@ -320,7 +310,6 @@ export type TestRunOrderByWithAggregationInput = {
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  jobId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   monitorId?: Prisma.SortOrder
   _count?: Prisma.TestRunCountOrderByAggregateInput
@@ -342,7 +331,6 @@ export type TestRunScalarWhereWithAggregatesInput = {
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"TestRun"> | string | null
   startedAt?: Prisma.DateTimeWithAggregatesFilter<"TestRun"> | Date | string
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TestRun"> | Date | string | null
-  jobId?: Prisma.StringNullableWithAggregatesFilter<"TestRun"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TestRun"> | Date | string
   monitorId?: Prisma.StringWithAggregatesFilter<"TestRun"> | string
 }
@@ -356,7 +344,6 @@ export type TestRunCreateInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   monitor: Prisma.MonitorCreateNestedOneWithoutTestRunsInput
   assertionResults?: Prisma.AssertionResultCreateNestedManyWithoutTestRunInput
@@ -371,7 +358,6 @@ export type TestRunUncheckedCreateInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   monitorId: string
   assertionResults?: Prisma.AssertionResultUncheckedCreateNestedManyWithoutTestRunInput
@@ -386,7 +372,6 @@ export type TestRunUpdateInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   monitor?: Prisma.MonitorUpdateOneRequiredWithoutTestRunsNestedInput
   assertionResults?: Prisma.AssertionResultUpdateManyWithoutTestRunNestedInput
@@ -401,7 +386,6 @@ export type TestRunUncheckedUpdateInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   monitorId?: Prisma.StringFieldUpdateOperationsInput | string
   assertionResults?: Prisma.AssertionResultUncheckedUpdateManyWithoutTestRunNestedInput
@@ -416,7 +400,6 @@ export type TestRunCreateManyInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   monitorId: string
 }
@@ -430,7 +413,6 @@ export type TestRunUpdateManyMutationInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -443,7 +425,6 @@ export type TestRunUncheckedUpdateManyInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   monitorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -467,7 +448,6 @@ export type TestRunCountOrderByAggregateInput = {
   errorMessage?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  jobId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   monitorId?: Prisma.SortOrder
 }
@@ -487,7 +467,6 @@ export type TestRunMaxOrderByAggregateInput = {
   errorMessage?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  jobId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   monitorId?: Prisma.SortOrder
 }
@@ -501,7 +480,6 @@ export type TestRunMinOrderByAggregateInput = {
   errorMessage?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  jobId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   monitorId?: Prisma.SortOrder
 }
@@ -594,7 +572,6 @@ export type TestRunCreateWithoutMonitorInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   assertionResults?: Prisma.AssertionResultCreateNestedManyWithoutTestRunInput
 }
@@ -608,7 +585,6 @@ export type TestRunUncheckedCreateWithoutMonitorInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   assertionResults?: Prisma.AssertionResultUncheckedCreateNestedManyWithoutTestRunInput
 }
@@ -651,7 +627,6 @@ export type TestRunScalarWhereInput = {
   errorMessage?: Prisma.StringNullableFilter<"TestRun"> | string | null
   startedAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TestRun"> | Date | string | null
-  jobId?: Prisma.StringNullableFilter<"TestRun"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TestRun"> | Date | string
   monitorId?: Prisma.StringFilter<"TestRun"> | string
 }
@@ -665,7 +640,6 @@ export type TestRunCreateWithoutAssertionResultsInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   monitor: Prisma.MonitorCreateNestedOneWithoutTestRunsInput
 }
@@ -679,7 +653,6 @@ export type TestRunUncheckedCreateWithoutAssertionResultsInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
   monitorId: string
 }
@@ -709,7 +682,6 @@ export type TestRunUpdateWithoutAssertionResultsInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   monitor?: Prisma.MonitorUpdateOneRequiredWithoutTestRunsNestedInput
 }
@@ -723,7 +695,6 @@ export type TestRunUncheckedUpdateWithoutAssertionResultsInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   monitorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -737,7 +708,6 @@ export type TestRunCreateManyMonitorInput = {
   errorMessage?: string | null
   startedAt: Date | string
   completedAt?: Date | string | null
-  jobId?: string | null
   createdAt?: Date | string
 }
 
@@ -750,7 +720,6 @@ export type TestRunUpdateWithoutMonitorInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assertionResults?: Prisma.AssertionResultUpdateManyWithoutTestRunNestedInput
 }
@@ -764,7 +733,6 @@ export type TestRunUncheckedUpdateWithoutMonitorInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assertionResults?: Prisma.AssertionResultUncheckedUpdateManyWithoutTestRunNestedInput
 }
@@ -778,7 +746,6 @@ export type TestRunUncheckedUpdateManyWithoutMonitorInput = {
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  jobId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -822,7 +789,6 @@ export type TestRunSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   errorMessage?: boolean
   startedAt?: boolean
   completedAt?: boolean
-  jobId?: boolean
   createdAt?: boolean
   monitorId?: boolean
   monitor?: boolean | Prisma.MonitorDefaultArgs<ExtArgs>
@@ -839,7 +805,6 @@ export type TestRunSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   errorMessage?: boolean
   startedAt?: boolean
   completedAt?: boolean
-  jobId?: boolean
   createdAt?: boolean
   monitorId?: boolean
   monitor?: boolean | Prisma.MonitorDefaultArgs<ExtArgs>
@@ -854,7 +819,6 @@ export type TestRunSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   errorMessage?: boolean
   startedAt?: boolean
   completedAt?: boolean
-  jobId?: boolean
   createdAt?: boolean
   monitorId?: boolean
   monitor?: boolean | Prisma.MonitorDefaultArgs<ExtArgs>
@@ -869,12 +833,11 @@ export type TestRunSelectScalar = {
   errorMessage?: boolean
   startedAt?: boolean
   completedAt?: boolean
-  jobId?: boolean
   createdAt?: boolean
   monitorId?: boolean
 }
 
-export type TestRunOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "httpStatus" | "responseTime" | "responseSize" | "errorMessage" | "startedAt" | "completedAt" | "jobId" | "createdAt" | "monitorId", ExtArgs["result"]["testRun"]>
+export type TestRunOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "httpStatus" | "responseTime" | "responseSize" | "errorMessage" | "startedAt" | "completedAt" | "createdAt" | "monitorId", ExtArgs["result"]["testRun"]>
 export type TestRunInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   monitor?: boolean | Prisma.MonitorDefaultArgs<ExtArgs>
   assertionResults?: boolean | Prisma.TestRun$assertionResultsArgs<ExtArgs>
@@ -902,7 +865,6 @@ export type $TestRunPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     errorMessage: string | null
     startedAt: Date
     completedAt: Date | null
-    jobId: string | null
     createdAt: Date
     monitorId: string
   }, ExtArgs["result"]["testRun"]>
@@ -1338,7 +1300,6 @@ export interface TestRunFieldRefs {
   readonly errorMessage: Prisma.FieldRef<"TestRun", 'String'>
   readonly startedAt: Prisma.FieldRef<"TestRun", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"TestRun", 'DateTime'>
-  readonly jobId: Prisma.FieldRef<"TestRun", 'String'>
   readonly createdAt: Prisma.FieldRef<"TestRun", 'DateTime'>
   readonly monitorId: Prisma.FieldRef<"TestRun", 'String'>
 }

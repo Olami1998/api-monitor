@@ -23,7 +23,7 @@ export async function applyRunOutcome(input: {
       });
       await prisma.notification.create({
         data: {
-          type: "EMAIL",
+          type: "IN_APP",
           status: "SENT",
           recipient: (await prisma.user.findUnique({ where: { id: input.ownerId } }))?.email ?? "",
           sentAt: new Date(),
@@ -77,7 +77,7 @@ export async function applyRunOutcome(input: {
     });
     await prisma.notification.create({
       data: {
-        type: "EMAIL",
+        type: "IN_APP",
         status: "SENT",
         recipient: owner?.email ?? "",
         sentAt: new Date(),

@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { SignOutAllButton } from "@/components/sign-out-all-button";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
@@ -21,6 +22,7 @@ export default async function SettingsPage() {
         <h2 className="font-medium">Account</h2>
         <p className="mt-2 text-sm">{user.name}</p>
         <p className="text-sm text-[var(--muted)]">{user.email}</p>
+        <SignOutAllButton />
       </section>
       <section className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5">
         <h2 className="font-medium">Notifications</h2>
@@ -28,7 +30,7 @@ export default async function SettingsPage() {
           {notifications.map((item) => (
             <li key={item.id} className="flex justify-between gap-3">
               <span>
-                {item.monitor?.name ?? "Account"} → {item.recipient} ({item.status})
+                {item.monitor?.name ?? "Account"} ({item.status})
               </span>
               <span className="text-[var(--muted)]">{item.type}</span>
             </li>

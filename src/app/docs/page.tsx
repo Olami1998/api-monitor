@@ -178,9 +178,10 @@ npm run dev`}
           <section id="security" className="scroll-mt-8 rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-6">
             <h2 className="text-xl font-semibold">Security notes</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-[var(--muted)]">
-              <li>Sessions use an httpOnly cookie. Sign out from Settings in the sidebar.</li>
+              <li>Sessions use an httpOnly cookie (Host-prefixed in production). Sign out all sessions from Settings.</li>
               <li>SSRF checks run at execution time, including DNS and redirect targets.</li>
-              <li>Auth headers are not forwarded across redirects.</li>
+              <li>Custom request headers are not forwarded across redirects.</li>
+              <li>Monitor request bodies and credentials are encrypted at rest.</li>
               <li>Set your own 32-byte hex <code className="rounded bg-stone-100 px-1">ENCRYPTION_KEY</code> before storing real secrets.</li>
             </ul>
           </section>
@@ -204,9 +205,17 @@ npm run dev`}
                     <td className="py-2 pr-4 font-mono text-xs text-stone-800">ENCRYPTION_KEY</td>
                     <td className="py-2">64-character hex key for monitor credentials</td>
                   </tr>
-                  <tr>
+                  <tr className="border-b border-[var(--line)]">
                     <td className="py-2 pr-4 font-mono text-xs text-stone-800">ENABLE_SCHEDULER</td>
                     <td className="py-2">true to run the 5s loop in next dev; production enables it by default</td>
+                  </tr>
+                  <tr className="border-b border-[var(--line)]">
+                    <td className="py-2 pr-4 font-mono text-xs text-stone-800">ALLOW_PUBLIC_REGISTRATION</td>
+                    <td className="py-2">Set false to close public signup unless REGISTRATION_INVITE matches</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-4 font-mono text-xs text-stone-800">REGISTRATION_INVITE</td>
+                    <td className="py-2">Optional invite code required at registration when set</td>
                   </tr>
                 </tbody>
               </table>

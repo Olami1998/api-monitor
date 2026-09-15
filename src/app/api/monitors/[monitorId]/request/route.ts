@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { error, json } from "@/lib/http";
 import { requireUser } from "@/lib/auth";
 import { parseBody, requestConfigSchema } from "@/lib/schemas";
+import { persistRequestConfig } from "@/lib/monitor";
 import { getOwnedMonitor } from "@/lib/access";
 import type { RouteParams } from "@/lib/route";
 
@@ -22,7 +23,7 @@ export async function PUT(request: Request, context: RouteParams<{ monitorId: st
 
   await prisma.monitor.update({
     where: { id: monitorId },
-    data: { request: JSON.parse(JSON.stringify(parsed.data)) },
+    data: { request: persistRequestConfig(parsed.data) },
   });
 
   return json({ success: true });

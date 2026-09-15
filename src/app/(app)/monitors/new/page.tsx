@@ -26,8 +26,12 @@ function NewMonitorForm() {
           name: formData.get("name"),
           url: formData.get("url"),
           method: formData.get("method"),
-          timeoutMs: Number(formData.get("timeoutMs")),
-          intervalSeconds: Number(formData.get("intervalSeconds")),
+          timeoutMs: Number.isFinite(Number(formData.get("timeoutMs")))
+            ? Number(formData.get("timeoutMs"))
+            : 10000,
+          intervalSeconds: Number.isFinite(Number(formData.get("intervalSeconds")))
+            ? Number(formData.get("intervalSeconds"))
+            : 300,
         }),
       });
       router.push(`/monitors/${monitor.id}`);
@@ -37,7 +41,7 @@ function NewMonitorForm() {
   }
 
   return (
-    <form action={onSubmit} className="max-w-xl space-y-4 rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-6">
+    <form method="post" action={onSubmit} className="max-w-xl space-y-4 rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-6">
       <label className="block text-sm">
         Project
         <select

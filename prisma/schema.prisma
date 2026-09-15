@@ -72,6 +72,7 @@ enum AssertionOperator {
 enum NotificationType {
   EMAIL
   WEBHOOK
+  IN_APP
 }
 
 enum NotificationStatus {
@@ -102,6 +103,12 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model RateBucket {
+  key         String   @id
+  count       Int      @default(0)
+  windowStart DateTime
 }
 
 model Project {
@@ -178,7 +185,6 @@ model TestRun {
   errorMessage String?
   startedAt    DateTime
   completedAt  DateTime?
-  jobId        String?
 
   createdAt DateTime @default(now())
 

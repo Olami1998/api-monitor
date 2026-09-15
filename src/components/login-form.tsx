@@ -35,7 +35,7 @@ export function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <h1 className="text-2xl font-semibold">Welcome back</h1>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <form method="post" action="/login" onSubmit={onSubmit} className="mt-6 space-y-4">
         <label className="block text-sm">
           Email
           <input autoComplete="email" name="email" type="email" required className="mt-1 w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2" />

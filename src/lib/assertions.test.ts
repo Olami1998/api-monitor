@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluateAssertions } from "./assertions";
+import { evaluateAssertions, summarizeAssertionResults } from "./assertions";
 import { isBlockedIpv4, isBlockedIp, isSafeHttpUrl } from "./ssrf";
 import { encryptString, decryptString } from "./encryption";
 import type { Assertion } from "@/generated/prisma/client";
@@ -37,6 +37,26 @@ describe("assertions", () => {
     );
     expect(results[0]?.passed).toBe(true);
   });
+
+  it("compares json numbers and numeric strings as equal", () => {
+    const results = evaluateAssertions(
+      [{ ...base, type: "JSON", operator: "EQUALS", target: "$.n", expectedValue: "1" }],
+      { responseBody: { n: 1 } }
+    );
+    expect(results[0]?.passed).toBe(true);
+  });
+
+  it("does not walk inherited object keys", () => {
+    const results = evaluateAssertions(
+      [{ ...base, type: "JSON", operator: "EXISTS", target: "$.toString" }],
+      { responseBody: { ok: true } }
+    );
+    expect(results[0]?.passed).toBe(false);
+  });
+
+  it("does not pass when no assertions are configured", () => {
+    expect(summarizeAssertionResults([])).toBe(false);
+  });
 });
 
 describe("ssrf", () => {
@@ -50,7 +70,9 @@ describe("ssrf", () => {
     expect(isSafeHttpUrl("http://127.1")).toBe(false);
     expect(isSafeHttpUrl("http://2130706433")).toBe(false);
     expect(isSafeHttpUrl("file:///etc/passwd")).toBe(false);
-    expect(isSafeHttpUrl("https://example.com/health")).toBe(true);
+    expect(isSafeHttpUrl("http://[2002:7f00:1::1]/")).toBe(false);
+    expect(isBlockedIp("2002:0a00:0001::1")).toBe(true);
+    expect(isSafeHttpUrl("http://[64:ff9b::7f00:1]/")).toBe(false);
   });
 
   it("blocks ipv6 link-local beyond fe80", () => {

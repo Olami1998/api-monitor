@@ -1,5 +1,5 @@
 import type { Monitor } from "@/generated/prisma/client";
-import { encryptString } from "@/lib/encryption";
+import { encryptString, decryptString } from "@/lib/encryption";
 
 export function publicAuth(auth: unknown) {
   if (!auth || typeof auth !== "object") {
@@ -19,24 +19,51 @@ function isSensitiveName(name: string) {
   );
 }
 
-export function publicRequest(request: unknown) {
+type RequestConfig = {
+  headers?: Record<string, string>;
+  queryParams?: Record<string, string>;
+  body?: unknown;
+};
+
+export function persistRequestConfig(request: RequestConfig) {
+  return { enc: encryptString(JSON.stringify(request)) };
+}
+
+export function readRequestConfig(request: unknown): RequestConfig {
   if (!request || typeof request !== "object") {
     return { headers: {}, queryParams: {}, body: null };
   }
   const data = request as Record<string, unknown>;
-  const headers: Record<string, string> = {};
-  if (data.headers && typeof data.headers === "object" && !Array.isArray(data.headers)) {
-    for (const [key, value] of Object.entries(data.headers as Record<string, unknown>)) {
-      if (typeof value !== "string") continue;
-      headers[key] = isSensitiveName(key) ? "[REDACTED]" : value;
+  if (typeof data.enc === "string") {
+    try {
+      const parsed = JSON.parse(decryptString(data.enc)) as RequestConfig;
+      return {
+        headers: parsed.headers ?? {},
+        queryParams: parsed.queryParams ?? {},
+        body: parsed.body ?? null,
+      };
+    } catch {
+      return { headers: {}, queryParams: {}, body: null };
     }
   }
+  return {
+    headers: (data.headers as Record<string, string>) ?? {},
+    queryParams: (data.queryParams as Record<string, string>) ?? {},
+    body: data.body ?? null,
+  };
+}
+
+export function publicRequest(request: unknown) {
+  const data = readRequestConfig(request);
+  const headers: Record<string, string> = {};
+  for (const [key, value] of Object.entries(data.headers ?? {})) {
+    if (typeof value !== "string") continue;
+    headers[key] = isSensitiveName(key) ? "[REDACTED]" : value;
+  }
   const queryParams: Record<string, string> = {};
-  if (data.queryParams && typeof data.queryParams === "object" && !Array.isArray(data.queryParams)) {
-    for (const [key, value] of Object.entries(data.queryParams as Record<string, unknown>)) {
-      if (typeof value !== "string") continue;
-      queryParams[key] = isSensitiveName(key) ? "[REDACTED]" : value;
-    }
+  for (const [key, value] of Object.entries(data.queryParams ?? {})) {
+    if (typeof value !== "string") continue;
+    queryParams[key] = isSensitiveName(key) ? "[REDACTED]" : value;
   }
   return {
     headers,
@@ -66,11 +93,11 @@ export function serializeMonitor(monitor: Monitor) {
 }
 
 export function defaultRequestConfig() {
-  return {
+  return persistRequestConfig({
     headers: {},
     queryParams: {},
     body: null,
-  };
+  });
 }
 
 export function defaultAuthConfig() {

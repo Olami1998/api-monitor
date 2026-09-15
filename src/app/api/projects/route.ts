@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { error, json } from "@/lib/http";
 import { requireUser } from "@/lib/auth";
 import { parseBody, projectSchema } from "@/lib/schemas";
+import { MAX_PROJECTS_PER_USER } from "@/lib/limits";
 
 export async function GET() {
   const result = await requireUser();
@@ -32,6 +33,11 @@ export async function POST(request: Request) {
   const parsed = parseBody(projectSchema, await request.json().catch(() => null));
   if (!parsed.ok) {
     return error("VALIDATION_ERROR", parsed.error, 422);
+  }
+
+  const projectCount = await prisma.project.count({ where: { userId: result.user.id } });
+  if (projectCount >= MAX_PROJECTS_PER_USER) {
+    return error("VALIDATION_ERROR", "Project limit reached.", 422);
   }
 
   const project = await prisma.project.create({

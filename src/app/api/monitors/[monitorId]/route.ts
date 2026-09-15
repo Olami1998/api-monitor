@@ -5,6 +5,7 @@ import { parseBody, updateMonitorSchema } from "@/lib/schemas";
 import { nextRunAt, serializeMonitor } from "@/lib/monitor";
 import { isSafeHttpUrl } from "@/lib/ssrf";
 import { getOwnedMonitor } from "@/lib/access";
+import { MAX_ENABLED_MONITORS_PER_USER } from "@/lib/limits";
 import type { RouteParams } from "@/lib/route";
 
 export async function GET(_request: Request, context: RouteParams<{ monitorId: string }>) {
@@ -38,6 +39,20 @@ export async function PATCH(request: Request, context: RouteParams<{ monitorId: 
   }
 
   const enabled = parsed.data.enabled;
+  if (enabled === true && !monitor.enabled) {
+    const enabledCount = await prisma.monitor.count({
+      where: { enabled: true, project: { userId: result.user.id } },
+    });
+    if (enabledCount >= MAX_ENABLED_MONITORS_PER_USER) {
+      return error("VALIDATION_ERROR", "Enabled monitor limit reached.", 422);
+    }
+  }
+
+  const intervalSeconds = parsed.data.intervalSeconds ?? monitor.intervalSeconds;
+  const willBeEnabled = enabled ?? monitor.enabled;
+  const intervalChanged =
+    parsed.data.intervalSeconds !== undefined && parsed.data.intervalSeconds !== monitor.intervalSeconds;
+
   const updated = await prisma.monitor.update({
     where: { id: monitorId },
     data: {
@@ -50,9 +65,12 @@ export async function PATCH(request: Request, context: RouteParams<{ monitorId: 
         ? {
             enabled,
             status: enabled ? "ACTIVE" : "PAUSED",
-            nextRunAt: enabled ? nextRunAt(parsed.data.intervalSeconds ?? monitor.intervalSeconds) : null,
+            health: enabled ? monitor.health : "UNKNOWN",
+            nextRunAt: enabled ? nextRunAt(intervalSeconds) : null,
           }
-        : {}),
+        : intervalChanged && willBeEnabled
+          ? { nextRunAt: nextRunAt(intervalSeconds) }
+          : {}),
     },
   });
 

@@ -97,7 +97,8 @@ export type AssertionOperator = (typeof AssertionOperator)[keyof typeof Assertio
 
 export const NotificationType = {
   EMAIL: 'EMAIL',
-  WEBHOOK: 'WEBHOOK'
+  WEBHOOK: 'WEBHOOK',
+  IN_APP: 'IN_APP'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

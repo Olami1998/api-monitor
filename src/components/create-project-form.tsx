@@ -25,7 +25,7 @@ export function CreateProjectForm() {
   }
 
   return (
-    <form action={onSubmit} className="flex flex-col gap-3 rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5 md:flex-row md:items-end">
+    <form method="post" action={onSubmit} className="flex flex-col gap-3 rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5 md:flex-row md:items-end">
       <label className="flex-1 text-sm">
         Name
         <input name="name" required className="mt-1 w-full rounded-lg border border-[var(--line)] px-3 py-2" />

@@ -5,6 +5,7 @@ import { parseBody, createMonitorSchema } from "@/lib/schemas";
 import { nextRunAt, serializeMonitor, defaultRequestConfig, defaultAuthConfig } from "@/lib/monitor";
 import { isSafeHttpUrl } from "@/lib/ssrf";
 import { getOwnedProject } from "@/lib/access";
+import { MAX_ENABLED_MONITORS_PER_USER, MAX_MONITORS_PER_USER } from "@/lib/limits";
 import type { RouteParams } from "@/lib/route";
 
 export async function GET(_request: Request, context: RouteParams<{ projectId: string }>) {
@@ -34,7 +35,7 @@ export async function POST(request: Request, context: RouteParams<{ projectId: s
   const monitorCount = await prisma.monitor.count({
     where: { project: { userId: result.user.id } },
   });
-  if (monitorCount >= 50) {
+  if (monitorCount >= MAX_MONITORS_PER_USER) {
     return error("VALIDATION_ERROR", "Monitor limit reached.", 422);
   }
 
@@ -44,6 +45,15 @@ export async function POST(request: Request, context: RouteParams<{ projectId: s
 
   const intervalSeconds = parsed.data.intervalSeconds ?? 300;
   const enabled = parsed.data.enabled ?? true;
+  if (enabled) {
+    const enabledCount = await prisma.monitor.count({
+      where: { enabled: true, project: { userId: result.user.id } },
+    });
+    if (enabledCount >= MAX_ENABLED_MONITORS_PER_USER) {
+      return error("VALIDATION_ERROR", "Enabled monitor limit reached.", 422);
+    }
+  }
+
   const monitor = await prisma.monitor.create({
     data: {
       name: parsed.data.name,
@@ -53,6 +63,7 @@ export async function POST(request: Request, context: RouteParams<{ projectId: s
       intervalSeconds,
       enabled,
       status: enabled ? "ACTIVE" : "PAUSED",
+      health: enabled ? "UNKNOWN" : "UNKNOWN",
       projectId,
       nextRunAt: enabled ? nextRunAt(intervalSeconds) : null,
       request: defaultRequestConfig(),

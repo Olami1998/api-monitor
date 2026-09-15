@@ -31,7 +31,7 @@ function getJsonPathValue(path: string | null | undefined, value: unknown) {
       current = current[index];
       continue;
     }
-    if (!(part in current)) {
+    if (!Object.hasOwn(current, part)) {
       return undefined;
     }
     current = (current as Record<string, unknown>)[part];
@@ -57,6 +57,28 @@ function compareNumeric(operator: string, expected: number, actual: number) {
     default:
       return false;
   }
+}
+
+function valuesEqual(expected: unknown, actual: unknown) {
+  if (Object.is(expected, actual)) return true;
+  if (expected == null || actual == null) return expected === actual;
+  if (typeof expected === "object" || typeof actual === "object") {
+    try {
+      return JSON.stringify(expected) === JSON.stringify(actual);
+    } catch {
+      return false;
+    }
+  }
+  if (
+    (typeof expected === "number" || typeof actual === "number") &&
+    expected !== "" &&
+    actual !== "" &&
+    Number.isFinite(Number(expected)) &&
+    Number.isFinite(Number(actual))
+  ) {
+    return Number(expected) === Number(actual);
+  }
+  return String(expected) === String(actual);
 }
 
 function valueType(actual: unknown) {
@@ -115,9 +137,9 @@ function evaluateAssertion(assertion: Assertion, context: EvaluationContext) {
         case "NOT_EXISTS":
           return { passed: actual === undefined, actual: actual ?? null, message: `JSON path ${assertion.target} absence check` };
         case "EQUALS":
-          return { passed: actual === expected, actual: actual ?? null, message: `JSON path ${assertion.target} should equal expected value` };
+          return { passed: valuesEqual(expected, actual), actual: actual ?? null, message: `JSON path ${assertion.target} should equal expected value` };
         case "NOT_EQUALS":
-          return { passed: actual !== expected, actual: actual ?? null, message: `JSON path ${assertion.target} should not equal expected value` };
+          return { passed: !valuesEqual(expected, actual), actual: actual ?? null, message: `JSON path ${assertion.target} should not equal expected value` };
         case "CONTAINS":
           return {
             passed: typeof actual === "string" && String(actual).includes(String(expected)),

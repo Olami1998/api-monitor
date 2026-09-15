@@ -31,12 +31,15 @@ export async function writeRunResult(
   });
 
   const assertionsPassed = results.every((result) => result.passed);
+  const missingAssertions = run.monitor.assertions.length === 0;
   const status =
-    input.status === "PASSED" && assertionsPassed
-      ? "PASSED"
-      : input.status === "PASSED"
-        ? "FAILED"
-        : input.status;
+    missingAssertions && input.status === "PASSED"
+      ? "FAILED"
+      : input.status === "PASSED" && assertionsPassed
+        ? "PASSED"
+        : input.status === "PASSED"
+          ? "FAILED"
+          : input.status;
 
   await prisma.$transaction([
     prisma.assertionResult.createMany({
@@ -57,9 +60,16 @@ export async function writeRunResult(
         httpStatus: input.httpStatus ?? null,
         responseTime: input.responseTime ?? null,
         responseSize: input.responseSize ?? null,
-        errorMessage: input.errorMessage ?? null,
+        errorMessage:
+          missingAssertions && input.status === "PASSED"
+            ? "No assertions configured"
+            : (input.errorMessage ?? null),
         completedAt: new Date(),
       },
+    }),
+    prisma.monitor.update({
+      where: { id: run.monitorId },
+      data: { lastRunAt: new Date() },
     }),
   ]);
 
@@ -69,9 +79,11 @@ export async function writeRunResult(
     ownerId: run.monitor.project.userId,
     passed: status === "PASSED",
     failureReason:
-      input.errorMessage ??
-      failedAssertion?.message ??
-      (status === "PASSED" ? null : `Run ended with status ${status}`),
+      missingAssertions && input.status === "PASSED"
+        ? "No assertions configured"
+        : (input.errorMessage ??
+          failedAssertion?.message ??
+          (status === "PASSED" ? null : `Run ended with status ${status}`)),
   });
 
   return { status, passed: status === "PASSED", results };

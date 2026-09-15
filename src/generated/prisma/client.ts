@@ -52,6 +52,11 @@ export type User = Prisma.UserModel
  */
 export type Session = Prisma.SessionModel
 /**
+ * Model RateBucket
+ * 
+ */
+export type RateBucket = Prisma.RateBucketModel
+/**
  * Model Project
  * 
  */

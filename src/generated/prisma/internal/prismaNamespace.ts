@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Session: 'Session',
+  RateBucket: 'RateBucket',
   Project: 'Project',
   Monitor: 'Monitor',
   Assertion: 'Assertion',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "project" | "monitor" | "assertion" | "testRun" | "assertionResult" | "incident" | "notification"
+    modelProps: "user" | "session" | "rateBucket" | "project" | "monitor" | "assertion" | "testRun" | "assertionResult" | "incident" | "notification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -570,6 +571,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SessionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    RateBucket: {
+      payload: Prisma.$RateBucketPayload<ExtArgs>
+      fields: Prisma.RateBucketFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RateBucketFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RateBucketFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        findFirst: {
+          args: Prisma.RateBucketFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RateBucketFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        findMany: {
+          args: Prisma.RateBucketFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>[]
+        }
+        create: {
+          args: Prisma.RateBucketCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        createMany: {
+          args: Prisma.RateBucketCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RateBucketCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>[]
+        }
+        delete: {
+          args: Prisma.RateBucketDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        update: {
+          args: Prisma.RateBucketUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        deleteMany: {
+          args: Prisma.RateBucketDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RateBucketUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RateBucketUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>[]
+        }
+        upsert: {
+          args: Prisma.RateBucketUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateBucketPayload>
+        }
+        aggregate: {
+          args: Prisma.RateBucketAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRateBucket>
+        }
+        groupBy: {
+          args: Prisma.RateBucketGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateBucketGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RateBucketCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateBucketCountAggregateOutputType> | number
         }
       }
     }
@@ -1152,6 +1227,15 @@ export const SessionScalarFieldEnum = {
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
+export const RateBucketScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  windowStart: 'windowStart'
+} as const
+
+export type RateBucketScalarFieldEnum = (typeof RateBucketScalarFieldEnum)[keyof typeof RateBucketScalarFieldEnum]
+
+
 export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1210,7 +1294,6 @@ export const TestRunScalarFieldEnum = {
   errorMessage: 'errorMessage',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
-  jobId: 'jobId',
   createdAt: 'createdAt',
   monitorId: 'monitorId'
 } as const
@@ -1340,6 +1423,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'HttpMethod'
  */
 export type EnumHttpMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HttpMethod'>
@@ -1378,20 +1475,6 @@ export type EnumMonitorHealthFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'MonitorHealth[]'
  */
 export type ListEnumMonitorHealthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorHealth[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1666,6 +1749,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit
+  rateBucket?: Prisma.RateBucketOmit
   project?: Prisma.ProjectOmit
   monitor?: Prisma.MonitorOmit
   assertion?: Prisma.AssertionOmit

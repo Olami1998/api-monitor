@@ -3,6 +3,7 @@ import { error, json } from "@/lib/http";
 import { requireUser } from "@/lib/auth";
 import { parseBody, assertionSchema } from "@/lib/schemas";
 import { getOwnedMonitor } from "@/lib/access";
+import { MAX_ASSERTIONS_PER_MONITOR } from "@/lib/limits";
 import type { RouteParams } from "@/lib/route";
 
 export async function POST(request: Request, context: RouteParams<{ monitorId: string }>) {
@@ -12,6 +13,11 @@ export async function POST(request: Request, context: RouteParams<{ monitorId: s
 
   const monitor = await getOwnedMonitor(result.user.id, monitorId);
   if (!monitor) return error("MONITOR_NOT_FOUND", "Monitor could not be found.", 404);
+
+  const assertionCount = await prisma.assertion.count({ where: { monitorId } });
+  if (assertionCount >= MAX_ASSERTIONS_PER_MONITOR) {
+    return error("VALIDATION_ERROR", "Assertion limit reached.", 422);
+  }
 
   const parsed = parseBody(assertionSchema, await request.json().catch(() => null));
   if (!parsed.ok) return error("VALIDATION_ERROR", parsed.error, 422);

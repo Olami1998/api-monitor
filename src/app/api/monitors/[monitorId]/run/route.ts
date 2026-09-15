@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { getOwnedMonitor } from "@/lib/access";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
 import { kickWorker } from "@/lib/runtime";
+import { MAX_QUEUED_RUNS_PER_USER } from "@/lib/limits";
 import type { RouteParams } from "@/lib/route";
 
 export async function POST(request: Request, context: RouteParams<{ monitorId: string }>) {
@@ -11,12 +12,22 @@ export async function POST(request: Request, context: RouteParams<{ monitorId: s
   if ("response" in result) return result.response;
   const { monitorId } = await context.params;
 
-  if (!rateLimit(`run:${clientKey(request, result.user.id)}`, 10, 60_000)) {
+  if (!(await rateLimit(`run:${clientKey(request, result.user.id)}`, 10, 60_000))) {
     return error("RATE_LIMITED", "Too many manual test runs.", 429);
   }
 
   const monitor = await getOwnedMonitor(result.user.id, monitorId);
   if (!monitor) return error("MONITOR_NOT_FOUND", "Monitor could not be found.", 404);
+
+  const inflight = await prisma.testRun.count({
+    where: {
+      monitor: { project: { userId: result.user.id } },
+      status: { in: ["QUEUED", "RUNNING"] },
+    },
+  });
+  if (inflight >= MAX_QUEUED_RUNS_PER_USER) {
+    return error("VALIDATION_ERROR", "Too many runs in progress.", 422);
+  }
 
   const run = await prisma.testRun.create({
     data: {

@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Session: 'Session',
+  RateBucket: 'RateBucket',
   Project: 'Project',
   Monitor: 'Monitor',
   Assertion: 'Assertion',
@@ -98,6 +99,15 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const RateBucketScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  windowStart: 'windowStart'
+} as const
+
+export type RateBucketScalarFieldEnum = (typeof RateBucketScalarFieldEnum)[keyof typeof RateBucketScalarFieldEnum]
 
 
 export const ProjectScalarFieldEnum = {
@@ -158,7 +168,6 @@ export const TestRunScalarFieldEnum = {
   errorMessage: 'errorMessage',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
-  jobId: 'jobId',
   createdAt: 'createdAt',
   monitorId: 'monitorId'
 } as const

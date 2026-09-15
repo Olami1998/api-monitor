@@ -1,5 +1,5 @@
 import { queueDueMonitors } from "@/lib/scheduler";
-import { processQueuedRuns } from "@/lib/worker";
+import { processQueuedRuns, pruneOldRuns, recoverStuckRuns } from "@/lib/worker";
 
 const globalRuntime = globalThis as unknown as {
   monitorRuntimeStarted?: boolean;
@@ -23,13 +23,18 @@ export function startRuntime() {
   globalRuntime.monitorRuntimeStarted = true;
 
   if (!schedulerEnabled()) {
+    void recoverStuckRuns().catch((error) => {
+      console.error("[monitor-runtime]", error);
+    });
     return;
   }
 
   const tick = async () => {
     try {
+      await recoverStuckRuns();
       await queueDueMonitors();
       await processQueuedRuns();
+      await pruneOldRuns();
     } catch (error) {
       console.error("[monitor-runtime]", error);
     }

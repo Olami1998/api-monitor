@@ -5,8 +5,12 @@ import { parseBody, loginSchema } from "@/lib/schemas";
 import { setSession } from "@/lib/session";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
 
+export async function GET() {
+  return error("METHOD_NOT_ALLOWED", "Use POST.", 405);
+}
+
 export async function POST(request: Request) {
-  if (!rateLimit(`login:${clientKey(request)}`, 8, 60_000)) {
+  if (!(await rateLimit(`login:${clientKey(request)}`, 8, 60_000))) {
     return error("RATE_LIMITED", "Too many login attempts.", 429);
   }
 
@@ -16,7 +20,7 @@ export async function POST(request: Request) {
   }
 
   const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
-  const valid = verifyPasswordOrDummy(parsed.data.password, user?.passwordHash);
+  const valid = await verifyPasswordOrDummy(parsed.data.password, user?.passwordHash);
   if (!user || !valid) {
     return error("UNAUTHORIZED", "Invalid credentials.", 401);
   }

@@ -54,9 +54,63 @@ function firstHextet(ip: string) {
   return Number.isFinite(value) ? value : null;
 }
 
+function parseIpv4Octets(hostname: string) {
+  if (!/^[0-9.]+$/.test(hostname)) return null;
+  if (/^\d+$/.test(hostname)) {
+    const n = Number(hostname);
+    if (!Number.isInteger(n) || n < 0 || n > 0xffffffff) return null;
+    return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+  }
+  const parts = hostname.split(".");
+  if (parts.length < 2 || parts.length > 4) return null;
+  const nums = parts.map((part) => Number(part));
+  if (nums.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+  if (parts.length === 2) return [nums[0]!, 0, 0, nums[1]!];
+  if (parts.length === 3) return [nums[0]!, nums[1]!, 0, nums[2]!];
+  return nums as number[];
+}
+
+function ipv4FromSixToFour(ip: string) {
+  const raw = stripBrackets(ip).toLowerCase();
+  if (!raw.startsWith("2002:")) return null;
+  const hextets = raw.replace(/^\[|\]$/g, "").split(":");
+  if (hextets.length < 3) return null;
+  const a = Number.parseInt(hextets[1] ?? "", 16);
+  const b = Number.parseInt(hextets[2] ?? "", 16);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  return `${(a >> 8) & 255}.${a & 255}.${(b >> 8) & 255}.${b & 255}`;
+}
+
+function ipv4FromNat64(ip: string) {
+  const raw = stripBrackets(ip).toLowerCase();
+  if (!raw.startsWith("64:ff9b:")) return null;
+  const expanded = expandIpv6(raw);
+  if (!expanded) return null;
+  const hextets = expanded.split(":");
+  if (hextets.length !== 8) return null;
+  const high = Number.parseInt(hextets[6] ?? "", 16);
+  const low = Number.parseInt(hextets[7] ?? "", 16);
+  if (!Number.isFinite(high) || !Number.isFinite(low)) return null;
+  return `${(high >> 8) & 255}.${high & 255}.${(low >> 8) & 255}.${low & 255}`;
+}
+
+function expandIpv6(ip: string) {
+  const [head, tail] = ip.split("::");
+  const headParts = head ? head.split(":").filter(Boolean) : [];
+  const tailParts = tail ? tail.split(":").filter(Boolean) : [];
+  if (headParts.length + tailParts.length > 8) return null;
+  const missing = 8 - headParts.length - tailParts.length;
+  const zeros = Array.from({ length: Math.max(missing, 0) }, () => "0");
+  return [...headParts, ...zeros, ...tailParts].map((part) => part.padStart(4, "0")).join(":");
+}
+
 export function isBlockedIpv6(ip: string) {
   const mapped = ipv4FromMappedIpv6(ip);
   if (mapped) return isBlockedIpv4(mapped);
+  const sixToFour = ipv4FromSixToFour(ip);
+  if (sixToFour) return isBlockedIpv4(sixToFour);
+  const nat64 = ipv4FromNat64(ip);
+  if (nat64) return isBlockedIpv4(nat64);
   const normalized = stripBrackets(ip).toLowerCase();
   const hextet = firstHextet(normalized);
   const linkLocal = hextet !== null && (hextet & 0xffc0) === 0xfe80;
@@ -106,10 +160,12 @@ export function parseHttpUrl(value: string) {
   if (isBlockedHostname(hostname)) {
     throw new Error("URL hostname is not allowed");
   }
-  if (isIP(hostname) && isBlockedIp(hostname)) {
+  const dotted = parseIpv4Octets(hostname);
+  const ipHost = dotted ? dotted.join(".") : hostname;
+  if (isIP(ipHost) && isBlockedIp(ipHost)) {
     throw new Error("URL resolves to a private or reserved address");
   }
-  url.hostname = hostname;
+  url.hostname = ipHost;
   return url;
 }
 

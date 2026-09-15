@@ -22,8 +22,6 @@ const FORBIDDEN_HEADERS = new Set([
   "authorization",
 ]);
 
-const SENSITIVE_HEADER = /^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|api-key|x-auth-token|x-access-token)$|token|secret|password|auth/i;
-
 type RequestConfig = {
   headers?: Record<string, string>;
   queryParams?: Record<string, string>;
@@ -51,11 +49,9 @@ function isSafeHeaderName(name: string) {
   return !FORBIDDEN_HEADERS.has(key);
 }
 
-function stripSensitiveHeaders(headers: Record<string, string>) {
+function stripRequestHeaders(headers: Record<string, string>) {
   for (const key of Object.keys(headers)) {
-    if (SENSITIVE_HEADER.test(key)) {
-      delete headers[key];
-    }
+    delete headers[key];
   }
 }
 
@@ -235,11 +231,10 @@ export async function executeMonitorRequest(input: {
         }
         const next = new URL(location, target.url);
         target = await assertSafeDestination(next.toString());
-        stripSensitiveHeaders(headers);
+        stripRequestHeaders(headers);
         if (response.status === 303 || ((response.status === 301 || response.status === 302) && method !== "HEAD")) {
           method = "GET";
           body = undefined;
-          delete headers["content-type"];
         }
         redirects += 1;
         continue;

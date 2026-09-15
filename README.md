@@ -34,6 +34,9 @@ Open [http://localhost:3000](http://localhost:3000). Sign in with `demo@example.
 | `DIRECT_URL` | Optional Neon **direct** URI (no `-pooler`) for `prisma migrate` |
 | `ENCRYPTION_KEY` | 32-byte hex key for monitor credentials |
 | `ENABLE_SCHEDULER` | Set `true` in `next dev` to run the 5s due-monitor loop. Production (`next start`) enables it unless you set `false`. |
+| `TRUST_PROXY` | Trust `X-Forwarded-For` for rate limits. Production treats this as on. |
+| `ALLOW_PUBLIC_REGISTRATION` | Set `false` to require `REGISTRATION_INVITE`. |
+| `REGISTRATION_INVITE` | Optional invite code required at signup when set. |
 
 ## Main loop
 

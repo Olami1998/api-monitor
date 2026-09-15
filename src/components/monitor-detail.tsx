@@ -227,7 +227,7 @@ export function MonitorDetail({ monitor }: { monitor: Monitor }) {
             </li>
           ))}
         </ul>
-        <form action={addAssertion} className="mt-4 grid gap-3 md:grid-cols-4">
+        <form method="post" action={addAssertion} className="mt-4 grid gap-3 md:grid-cols-4">
           <select name="type" className="rounded-lg border border-[var(--line)] px-3 py-2">
             <option>STATUS_CODE</option>
             <option>RESPONSE_TIME</option>
@@ -250,7 +250,7 @@ export function MonitorDetail({ monitor }: { monitor: Monitor }) {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <form action={saveRequest} className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5">
+        <form method="post" action={saveRequest} className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5">
           <h2 className="font-medium">Request</h2>
           <label className="mt-3 block text-sm">
             Headers (Header: value per line)
@@ -274,7 +274,7 @@ export function MonitorDetail({ monitor }: { monitor: Monitor }) {
           </label>
           <button className="mt-3 rounded-lg border border-[var(--line)] px-4 py-2">Save request</button>
         </form>
-        <form action={saveAuth} className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5">
+        <form method="post" action={saveAuth} className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-5">
           <h2 className="font-medium">Authentication</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">Secrets are encrypted and never returned by the API.</p>
           <select name="type" defaultValue={auth.type ?? "NONE"} className="mt-3 w-full rounded-lg border border-[var(--line)] px-3 py-2">

@@ -10,6 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/Session'
+export type * from './models/RateBucket'
 export type * from './models/Project'
 export type * from './models/Monitor'
 export type * from './models/Assertion'

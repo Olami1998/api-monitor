@@ -8,6 +8,7 @@ export const registerSchema = z.object({
     .email()
     .transform((value) => value.toLowerCase()),
   password: z.string().min(8).max(200),
+  invite: z.string().max(200).optional(),
 });
 
 export const loginSchema = z.object({

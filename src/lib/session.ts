@@ -3,11 +3,17 @@ import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "api_monitor_session";
+const HOST_SESSION_COOKIE = "__Host-api_monitor_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+
+function cookieName() {
+  return process.env.NODE_ENV === "production" ? HOST_SESSION_COOKIE : SESSION_COOKIE;
+}
 
 export async function getSessionUserId() {
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
+  const sessionId =
+    cookieStore.get(cookieName())?.value ?? cookieStore.get(SESSION_COOKIE)?.value;
   if (!sessionId) return null;
 
   const session = await prisma.session.findUnique({
@@ -28,10 +34,11 @@ export async function setSession(userId: string) {
   await prisma.session.create({
     data: { id: sessionId, userId, expiresAt },
   });
-  cookieStore.set(SESSION_COOKIE, sessionId, {
+  const secure = process.env.NODE_ENV === "production";
+  cookieStore.set(cookieName(), sessionId, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure,
     path: "/",
     maxAge: SESSION_TTL_MS / 1000,
   });
@@ -39,9 +46,18 @@ export async function setSession(userId: string) {
 
 export async function clearSession() {
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
+  const sessionId =
+    cookieStore.get(cookieName())?.value ?? cookieStore.get(SESSION_COOKIE)?.value;
   if (sessionId) {
     await prisma.session.delete({ where: { id: sessionId } }).catch(() => undefined);
   }
   cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(cookieName());
+}
+
+export async function clearAllSessions(userId: string) {
+  await prisma.session.deleteMany({ where: { userId } });
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(cookieName());
 }
